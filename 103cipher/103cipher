@@ -1,0 +1,99 @@
+#!/usr/bin/python3
+##
+## EPITECH PROJECT, 2020
+## delivery
+## File description:
+## 103cipher
+##
+
+from sys import argv
+import math
+
+def print_argv():
+    print("USAGE")
+    print("    ./103cipher message key flag\n")
+    print("DESCRIPTION")
+    print("    message     a message, made of ASCII characters")
+    print("    key         the encryption key, made of ASCII characters")
+    print("    flag        0 for the message to be encrypted, 1 to be decrypted")
+    exit(0)
+
+def print_key (matrix, flag):
+    print("Key matrix:")
+    if (flag == 0):
+        print('{:}'  '{:8}'  '{:8}'.format(matrix[0][0], matrix[0][1], matrix[0][2]))
+        print('{:}'  '{:8}'  '{:8}'.format(matrix[1][0], matrix[1][1], matrix[1][2]))
+        print('{:}'  '{:8}'  '{:8}'.format(matrix[2][0], matrix[2][1], matrix[2][2]))
+
+def conv_key(key, flag):
+    n = 3
+    matrix = []
+    i = 0
+    for j in range (0, n):
+        line = []
+        for k in range (0, n):
+            line.append((ord(key[i])) if i < len(key) else 0)
+            i += 1
+        matrix.append(line)
+    print_key(matrix, flag)
+    return matrix, n
+
+def conv_message(message, n):
+    matrix2 = []
+    i = 0
+    while i < len(message):
+        line = []
+        for k in range (0, n):
+            line.append((ord(message[i])) if i < len(message) else 0)
+            i += 1
+        matrix2.append(line)
+    return matrix2
+
+def inv_key(matrix):
+    y = len(matrix)
+    x = len(matrix[0])
+    c = [[0]* x for p in range(y)]
+    for p in range(y):
+        for r in range(x):
+            c[r][p] = matrix[p][r]
+    return c
+
+def calc_encrypted(matrix, matrix2, flag, n):
+    if (flag == 0):
+        matrix_key = inv_key(matrix)
+        matrix_message = matrix2
+        matrix_result = []
+        z = 0
+        tmp = 0
+        print(matrix_key)
+        print(matrix_message)
+        for l in range (len(matrix2)):
+            for m in range (n):
+                tmp += matrix_key[l][m] * matrix_message[z][m]
+                print(l)
+            if (m == len(matrix)):
+                z += 1
+            if (l == 2):
+                l = 0
+                m = 0
+            matrix_result.append(tmp)
+            tmp = 0
+    print(matrix_result)
+    return matrix_result
+
+def princ():
+    if len(argv) != 4:
+        exit(84)
+    if len(argv) == 2 and argv[1] == "-h":
+        print_argv()
+    flag = int(argv[3])
+    matrix, n = conv_key(argv[2], flag)
+    message = conv_message(argv[1], n)
+    result = calc_encrypted(matrix, message, flag, n)
+
+if __name__ == "__main__":
+    try:
+        princ()
+    except Exception as excp:
+        print("Error:", excp)
+        exit(84)

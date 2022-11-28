@@ -1,0 +1,131 @@
+#!/usr/bin/python3
+##
+## EPITECH PROJECT, 2020
+## delivery
+## File description:
+## 102architect
+##
+
+from sys import argv
+import math
+
+def print_argv():
+    if len(argv) == 2 and argv[1] == "-h":
+        print("USAGE")
+        print("    ./102architect x y transfo1 arg11 [transfo2 arg12 [arg22]] ...\n")
+        print("DESCRIPTION")
+        print("    x   abscissa of the original point")
+        print("    y   ordinate of the original point\n")
+        print("    transfo arg1 [arg2]")
+        print("    -t i j  translation along vector (i, j)")
+        print("    -z m n  scaling by factors m (x-axis) and n (y-axis)")
+        print("    -r d    rotation centered in O by a d degree angle")
+        print("    -s d    reflection over the axis passing through O with an inclination angle of d degrees")
+        exit(0)
+
+def translation (x, y, i, j):
+    print("Translation along vector ({}, {})".format(argv[4], argv[5]))
+    matrix = [[1.00, 0.00, i],[0.00, 1.00, j],[0.00, 0.00, 1.00]]
+    matrix1 = [[x], [y], [1]]
+    matrix_result = [[0], [0], [1]]
+    for i in range (len(matrix)):
+        for k in range (len(matrix)):
+            matrix_result[i][0] += matrix[i][k] * matrix1[k][0]
+    return matrix_result
+
+def scaling (x, y, m ,n):
+    print("Scaling by factors"' {} '"and"' {} '.format(argv[4], argv[5]))
+    matrix = [[m, 0.00, 0.00],[0.00, n, 0.00],[0.00, 0.00, 1.00]]
+    matrix1 = [[x], [y], [1]]
+    matrix_result = [[0], [0], [1]]
+    for i in range (len(matrix)):
+        for k in range (len(matrix)):
+            matrix_result[i][0] += matrix[i][k] * matrix1[k][0]
+    return matrix_result
+
+def rotation (x, y, r):
+    r = (math.pi / 180) * r
+    matrix = [[(math.cos(r)), (-math.sin(r)), 0.00],[(math.sin(r)), (math.cos(r)), 0.00],[0.00, 0.00, 1.00]]
+    matrix1 = [[x], [y], [1]]
+    matrix_result = [[0], [0], [1]]
+    for i in range (len(matrix)):
+        for k in range (len(matrix)):
+            matrix_result[i][0] += matrix[i][k] * matrix1[k][0]
+    return matrix_result
+
+def reflection (x, y, d):
+    d = (math.pi / 180) * d
+    matrix = [[math.cos(2*d), math.sin(2*d), 0.00],[math.sin(2*d), -math.cos(2*d), 0.00],[0.00, 0.00, 1.00]]
+    matrix1 = [[x], [y], [1]]
+    matrix_result = [[0], [0], [1]]
+    for i in range (len(matrix)):
+        for k in range (len(matrix)):
+            matrix_result[i][0] += matrix[i][k] * matrix1[k][0]
+    return matrix_result
+
+def print_matrix (matrix):
+    print('{:.2f}'  '{:8.2f}'  '{:8.2f}'.format(matrix[0][0], matrix[0][1], matrix[0][2]))
+    print('{:.2f}'  '{:8.2f}'  '{:8.2f}'.format(matrix[1][0], matrix[1][1], matrix[1][2]))
+    print('{:.2f}'  '{:8.2f}'  '{:8.2f}'.format(matrix[2][0], matrix[2][1], matrix[2][2]))
+
+def calc_r ():
+    x = int(argv[1])
+    y = int(argv[2])
+    r = int(argv[4])
+    matrix_result = rotation(x, y, r)
+    print('({:.2f}, '  '{:.2f}) => ''({:.2f}, '  '{:.2f})'.format(x, y, matrix_result[0][0], matrix_result[1][0]))
+
+def calc_s ():
+    x = int(argv[1])
+    y = int(argv[2])
+    d = int(argv[4])
+    matrix_result = reflection(x, y, d)
+    print('({:.2f}, '  '{:.2f}) => ''({:.2f}, '  '{:.2f})'.format(x, y, matrix_result[0][0], matrix_result[1][0]))
+
+def princ ():
+    x = int(argv[1])
+    y = int(argv[2])
+    matrix = [[1.00, 0.00, 0.00],[0.00, 1.00, 0.00],[0.00, 0.00, 1.00]]
+    if argv[3] == "-t":
+        i = int(argv[4])
+        j = int(argv[5])
+        matrix[0][2] = i
+        matrix[1][2] = j
+        matrix_result = translation(x, y, i, j)
+        print_matrix(matrix)
+        print('({:.2f}, '  '{:.2f}) => ''({:.2f}, '  '{:.2f})'.format(x, y, matrix_result[0][0], matrix_result[1][0]))
+    elif argv[3] == "-z":
+        m = int(argv[4])
+        n = int(argv[5])
+        matrix[0][0] = m
+        matrix[1][1] = n
+        matrix_result = scaling(x, y, m, n)
+        print_matrix(matrix)
+        print('({:.2f}, '  '{:.2f}) => ''({:.2f}, '  '{:.2f})'.format(x, y, matrix_result[0][0], matrix_result[1][0]))
+    elif argv[3] == "-r" and len(argv) == 5:
+        r = int(argv[4])
+        r = (math.pi / 180) * r
+        matrix[0][0] = math.cos(r)
+        matrix[0][1] = -math.sin(r)
+        matrix[1][0] = math.sin(r)
+        matrix[1][1] = math.cos(r)
+        print("Rotation by a"' {} '"degree angle".format(argv[4]))
+        print_matrix(matrix)
+        calc_r()
+    elif argv[3] == "-s":
+        d = int(argv[4])
+        d = (math.pi / 180) * d
+        matrix[0][0] = math.cos(2*d)
+        matrix[0][1] = math.sin(2*d)
+        matrix[1][0] = math.sin(2*d)
+        matrix[1][1] = -math.cos(2*d)
+        print("Reflection over an axis with an inclination angle of"' {} '"degrees".format(argv[4]))
+        print_matrix(matrix)
+        calc_s()
+
+if __name__ == "__main__":
+    try:
+        princ()
+    except Exception as excp:
+        print("Error:", excp)
+        exit(84)
